@@ -4,14 +4,14 @@ tomservice
 Tom Service, a wordpress plugin, provides Soap calls to the German VG Wort royalty collection service. Texte Online Melden
 
 === WP-TOMSERVICE ===
-Contributors: mwa@newthinking.de
-Url: http://netzpolitik.org/
-Tags: VG-Wort, T.O.M., Zählpixel
-Requires at least: 3.0
-Tested up to: 3.5
-Stable tag: 1.0
-License: GPLv2 or later
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
+* Contributors: mwa@newthinking.de
+* Url: http://netzpolitik.org/
+* Tags: VG-Wort, T.O.M., Zählpixel
+* Requires at least: 3.0
+* Tested up to: 3.5
+* Stable tag: 1.0
+* License: GPLv2 or later
+* License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 WP_TOMSERVICE add the "VG Wort Zaehlpixel" to your posts/pages. Assign authors
 their 'cardNumbers from VG Wort'. Register the text URL, content and authors.
