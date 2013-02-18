@@ -41,9 +41,9 @@ Folgende Funktionen bietet das Plugin
 * Entpacke das Archiv ins Wordpress Plugin Verzeichnis (wp-content/plugins/)
 * Aktiviere das Plugin im Wordpress Backend.
 * Erstelle folgende Zeilen im wp-config.php 
-** define(WORT_USER, 'vgWortVerlegerKonto');
-** define(WORT_PASS, 'passwort');
-** define(WORT_KARTEI, 'vgwortverlegerkartei');
+* - define(WORT_USER, 'vgWortVerlegerKonto');
+* - define(WORT_PASS, 'passwort');
+* - define(WORT_KARTEI, 'vgwortverlegerkartei');
 * Erstelle die 'cardNumber' (Karteinummer) fuer mindestens ein Autor
 * Fertig, nun befindet sich in Beiträgen die von 'In Bearbeitung' auf 'Veroeffentlicht' geschaltet werden die Pixelcode img tags
 
