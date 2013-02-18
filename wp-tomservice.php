@@ -75,7 +75,7 @@ add_action('service_submit_event', 'wpTomServiceCron',2);
     function wpTomServiceSettingsPage (){
       global $wpdb;
       // REQUEST
-      $results = $wpdb->get_results($wpdb->prepare("SELECT * FROM wp_postmeta PM INNER JOIN wp_posts P ON P.ID = PM.post_id WHERE PM.meta_key = 'tom_submitted' AND PM.meta_value ='pending' AND P.post_status = 'publish' AND P.post_type IN ('post') LIMIT 5"));
+      $results = $wpdb->get_results($wpdb->prepare("SELECT * FROM wp_postmeta PM INNER JOIN wp_posts P ON P.ID = PM.post_id WHERE PM.meta_key = 'tom_submitted' AND PM.meta_value ='pending' AND P.post_status = 'publish' AND P.post_type IN ('post') LIMIT 20"));
     // select TIMESTAMPDIFF(MINUTE, NOW(), timestamp_column) FROM my_table 
       if(isset($_POST[ 'save' ])){
        //update_option('wp_tommeta' , $_POST['wptommeta']);
@@ -91,14 +91,14 @@ add_action('service_submit_event', 'wpTomServiceCron',2);
         $date = new DateTime($result->post_date_gmt);
         $postdate = $date->format("U");
         // now days
-        $elapsed = (time() - $elapsed )  / 86400 % 7;
+        $elapsed = (time() - $postdate )  / 86400 % 7;
 
         // only submit if older than 5 days
         if ($elapsed > 4) {
           $soapResult = wpTomServiceCron($result->ID, $code[0], $cardNumber[0]); 
           
         }
-        echo '<li>Artikel ID/Titel '. $result->ID . ' <b> ' . $result->post_title . '</b> vom Datum '. $date->format("Y-m-d")  . ' und Alter (tage, mind. 5 ) ' . $elapsed . ' vom Autor ' . $cardNumber['0'] . ' - status: ' .  '</li>';
+        echo '<li>Artikel ID/Titel '. $result->ID . ' <b> ' . $result->post_title . '</b> vom Datum '. $date->format("Y-m-d")  . ' und Alter ' . $elapsed . ' (mind. 5 tage) vom Autor ' . $cardNumber['0'] . ' - status: ' .  '</li>';
           sleep(3);
 
       }
