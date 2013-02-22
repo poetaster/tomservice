@@ -91,7 +91,7 @@ add_action('service_submit_event', 'wpTomServiceCron',2);
         $date = new DateTime($result->post_date_gmt);
         $postdate = $date->format("U");
         // now days
-        $elapsed = (time() - $postdate )  / 86400 % 7;
+        $elapsed = (time() - $postdate )  / 86400;
 
         // only submit if older than 5 days
         if ($elapsed > 4) {
