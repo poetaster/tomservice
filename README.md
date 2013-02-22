@@ -1,7 +1,7 @@
 tomservice
 ==========
 
-Tom Service, a wordpress plugin, provides Soap calls to the German VG Wort royalty collection service. Texte Online Melden
+Tom Service, a wordpress plugin, provides Soap calls to the German VG Wort royalty collection service. Texte Online Melden. Development funded by newthinking.de for netzpolitik.org.
 
 === WP-TOMSERVICE ===
 
