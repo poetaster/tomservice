@@ -6,6 +6,7 @@
  * Version: 1.00
  * Author: Mark Washeim mwa@newthinking.de
  * Author URI: http://netzpolitik.org
+ * License: GPL v2.0 http://www.gnu.org/licenses/gpl-2.0
  * Vgwort services at
  * pixel service https://tom.vgwort.de/services/1.0/pixelService.wsdl
  * message service https://tom.vgwort.de/services/1.2/messageService.wsdl
@@ -75,28 +76,30 @@ add_action('service_submit_event', 'wpTomServiceCron',2);
     function wpTomServiceSettingsPage (){
       global $wpdb;
       // REQUEST
-      $results = $wpdb->get_results($wpdb->prepare("SELECT * FROM wp_postmeta PM INNER JOIN wp_posts P ON P.ID = PM.post_id WHERE PM.meta_key = 'tom_submitted' AND PM.meta_value ='pending' AND P.post_status = 'publish' AND P.post_type IN ('post') LIMIT 20"));
-    // select TIMESTAMPDIFF(MINUTE, NOW(), timestamp_column) FROM my_table 
+      $results = $wpdb->get_results("SELECT * FROM $wpdb->postmeta PM INNER JOIN $wpdb->posts P ON P.ID = PM.post_id WHERE PM.meta_key = 'tom_submitted' AND PM.meta_value ='pending' AND P.post_status = 'publish' AND P.post_type IN ('post') LIMIT 20");
+
+      // we should do our time checking at query .. select TIMESTAMPDIFF(MINUTE, NOW(), timestamp_column) FROM my_table 
+      // but we don't as yet 
+      // also, the limit here is a lousy solution
+      
       if(isset($_POST[ 'save' ])){
        //update_option('wp_tommeta' , $_POST['wptommeta']);
        $t_time = time();
        echo '<ul> <div class="wrap">';
        foreach($results as $result){
-       // fetch the time the pixels were ordered
-          $vgwort = get_post_meta( $result->ID , 'tom_orderDateTime' , false );
-          $code = get_post_meta( $result->ID , 'tom_privateIdentificationId' , false );
-           $cardNumber = get_user_meta($result->post_author, 'wp_tommeta_auth', false);
-        //determine elapsed hours
-        //post date in U is seconds unixtime
-        $date = new DateTime($result->post_date_gmt);
-        $postdate = $date->format("U");
-        // now days
-        $elapsed = (time() - $postdate )  / 86400;
+         // fetch the time the pixels were ordered
+         $vgwort = get_post_meta( $result->ID , 'tom_orderDateTime' , false );
+         $code = get_post_meta( $result->ID , 'tom_privateIdentificationId' , false );
+         $cardNumber = get_user_meta($result->post_author, 'wp_tommeta_auth', false);
+         //determine elapsed hours post date in U is seconds unixtime
+         $date = new DateTime($result->post_date_gmt);
+         $postdate = $date->format("U");
+         // now days
+         $elapsed = (time() - $postdate )  / 86400;
 
         // only submit if older than 5 days
         if ($elapsed > 4) {
           $soapResult = wpTomServiceCron($result->ID, $code[0], $cardNumber[0]); 
-          
         }
         echo '<li>Artikel ID/Titel '. $result->ID . ' <b> ' . $result->post_title . '</b> vom Datum '. $date->format("Y-m-d")  . ' und Alter ' . $elapsed . ' (mind. 5 tage) vom Autor ' . $cardNumber['0'] . ' - status: ' .  '</li>';
           sleep(3);
@@ -111,11 +114,11 @@ add_action('service_submit_event', 'wpTomServiceCron',2);
         <?php echo 'Insgesammt:' . count($results) . ' Artikel zu melden.';   ?>
                 <table class="form-table">
                     <tr valign="top">
-                    <th scope="row"> <label for="Metaname">VG Wort Daten (wp-config.php): </label> </th>
+                    <th scope="row"> <label for="Metaname">VG Wort Daten (see wp-config.php): </label> </th>
                         <td>
                         user: <?php echo WORT_USER; ?> <br />
                         card: <?php echo WORT_KARTEI; ?> <br />
-                        pass(enc'd): <?php echo base64_encode(WORT_PASS); ?> <br />
+                        pass: somepassword :) <br />
                      </td>
                     </tr>
                     <tr valign="top">
@@ -126,6 +129,10 @@ add_action('service_submit_event', 'wpTomServiceCron',2);
                 </tr>
              </form>
             </table>
+            <p> Many thanks to <b>Marcus Franke</b> <a href="http://www.internet-marketing-dresden.de" title="internet-marketing-dresden.de">internet-marketing-dresden.de</a> for examples and feedback.</p>
+            <p> Many thanks for examples/code  <a href="http://pkp.sfu.ca/wiki/index.php/VGWortPlugIn_Doku"> Funktionaler Ausbau von und Mehrwertdienste für "Open Journal Systems"</a>, Freie Universität Berlin, http://www.cedis.fu-berlin.de/ojs-de</p>
+            <p>License: GPL v2.0 http://www.gnu.org/licenses/gpl-2.0</p>
+            <p>NO WARRANTY: BECAUSE THE PROGRAM IS LICENSED FREE OF CHARGE, THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY APPLICABLE LAW. EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES PROVIDE THE PROGRAM "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH YOU. SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY SERVICING, REPAIR OR CORRECTION. IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MAY MODIFY AND/OR REDISTRIBUTE THE PROGRAM AS PERMITTED ABOVE, BE LIABLE TO YOU FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED TO LOSS OF DATA OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.</p>
         </div>
         <?php
     }
@@ -137,7 +144,6 @@ add_action('service_submit_event', 'wpTomServiceCron',2);
     *
     */
     function wpTomServiceAdminFooter() {
-        global $wpdb;
         global $post;
 
         if(!empty( $post->post_content )) { 
@@ -168,12 +174,12 @@ add_action('service_submit_event', 'wpTomServiceCron',2);
             // VG vorhanden?
             $vgwort = get_post_meta( $post->ID , 'tom_publicIdentificationId' , true );
             if($vgwort)    {
-                echo '<br/><span style="color:green">vorhanden</span>';
+                echo '<br/><span style="color:green">vorhanden</span><br />';
+                echo tomCharCount($post->post_content).' '.' Zeichen';
             }
             else {
               echo '<br/><span style="color:red">nicht vorhanden</span><br />';
-              $vgw_char_count = strip_tags($post->post_content);
-              echo strlen(utf8_decode($vgw_char_count)).' '.' Zeichen';
+              echo tomCharCount($post->post_content).' '.' Zeichen';
               //echo sprintf('<a href="user-edit.php?user_id=%d">(überprüfen)</a>', $post->post_author );
             }
         }
