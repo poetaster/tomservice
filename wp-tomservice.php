@@ -273,7 +273,7 @@ add_action('service_submit_event', 'wpTomServiceCron',2);
     $domain = $domain[0];
 
     if(!empty( $pixel )){
-       $content .= '<div id="vgwort"><img src="http://'. $domain . '/na/' . $pixel .'" width="1" height="1" alt="vgwort pixel" /></div>';
+       $content .= '<div class="vgwort"><img src="http://'. $domain . '/na/' . $pixel .'" width="1" height="1" alt="vgwort pixel" /></div>';
     }
     return $content;
 
