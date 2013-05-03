@@ -273,11 +273,12 @@ function wpTomServiceDisplay( $content ) {
   $domain = $domain[0];
 
   #echo $_SERVER['HTTPS'] . ' and  ' . $_SERVER['SERVER_PORT'];
+  
   if(!empty( $pixel )){
-    if ( $_SERVER['HTTPS'] == 'on' || $_SERVER['SERVER_PORT'] = '443' ) {
-      $content .= '<div class="vgwort"><img src="https://ssl-'. $domain . '/na/' . $pixel .'" width="1" height="1" alt="vgwort pixel" /></div>';
+    if ( $_SERVER['SERVER_PORT'] == '80' ) {
+      $content .= '<div class="vgwort"><img src="http://'. $domain . '/na/' . $pixel .'" width="1" height="1" alt="vgwort pixel" ></img></div>';
     } else {
-      $content .= '<div class="vgwort"><img src="http://'. $domain . '/na/' . $pixel .'" width="1" height="1" alt="vgwort pixel" /></div>';
+      $content .= '<div class="vgwort"><img src="https://ssl-'. $domain . '/na/' . $pixel .'" width="1" height="1" alt="vgwort pixel" ></img></div>';
     }
   }
   return $content;
