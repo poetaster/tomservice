@@ -276,9 +276,9 @@ function wpTomServiceDisplay( $content ) {
   
   if(!empty( $pixel )){
     if ( $_SERVER['SERVER_PORT'] == '80' ) {
-      $content .= '<div class="vgwort"><img src="http://'. $domain . '/na/' . $pixel .'" width="1" height="1" alt="vgwort pixel" ></img></div>';
+      $content .= '<div class="vgwort"><img src="http://'. $domain . '/na/' . $pixel .'" width="1" height="1" alt="" ></img></div>';
     } else {
-      $content .= '<div class="vgwort"><img src="https://ssl-'. $domain . '/na/' . $pixel .'" width="1" height="1" alt="vgwort pixel" ></img></div>';
+      $content .= '<div class="vgwort"><img src="https://ssl-'. $domain . '/na/' . $pixel .'" width="1" height="1" alt="" ></img></div>';
     }
   }
   return $content;
@@ -499,7 +499,7 @@ function wpTomServiceCron($post_id, $code, $author = '') {
   catch (SoapFault $soapFault) {
     $detail = $soapFault->faultcode;
     update_post_meta($post->ID , 'tom_fault',  $soapFault->faultstring);
-    return (string) $soapFault->detail;
+    return $soapFault->detail;
     // yup, trouble in paradise
     // wp_clear_scheduled_hook( 'service_submit_event', array( $post->ID ) );
     // wp_schedule_single_event(time()+700, 'service_submit_event' , array($post->ID));
