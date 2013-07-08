@@ -477,7 +477,7 @@ function wpTomServiceCron($post_id, $code, $author = '') {
   $text = array('plainText'=>strip_tags($post->post_content));
 
   // create a VG Wort message
-  $message = array('lyric'=>$isLyric, 'shorttext'=>$shortText, 'text'=>$text);
+  $message = array('lyric'=>'false', 'shorttext'=>$shortText, 'text'=>$text);
 
   try {
     // catch and throw an exception if the authentication or the authorization error occurs
@@ -498,7 +498,7 @@ function wpTomServiceCron($post_id, $code, $author = '') {
   }
   catch (SoapFault $soapFault) {
     $detail = $soapFault->faultcode;
-    update_post_meta($post->ID , 'tom_fault',  $soapFault->faultstring);
+    update_post_meta($post->ID , 'tom_fault',  $soapFault->detail);
     return $soapFault->detail;
     // yup, trouble in paradise
     // wp_clear_scheduled_hook( 'service_submit_event', array( $post->ID ) );
