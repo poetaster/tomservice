@@ -491,7 +491,8 @@ function wpTomServiceCron($post_id, $code, $author = '') {
     // we flag it's been submitted to avoid processing again. 
     // used as flag in the settings page post action. 
     update_post_meta($post->ID , 'tom_submitted',  'submitted');
-    error_log($client->__getLastRequest(),0);
+    // the following permits seeing the actual xml data submitted
+    //error_log($client->__getLastRequest(),0);
     return $result;
     //wp_clear_scheduled_hook( 'service_submit_event', array( $post->ID, $fpriv ) );
   }
@@ -499,7 +500,6 @@ function wpTomServiceCron($post_id, $code, $author = '') {
     $detail = $soapFault->faultcode;
     update_post_meta($post->ID , 'tom_fault',  $soapFault->detail);
     return $soapFault->detail;
-    error_log($soapFault->detail);
     // yup, trouble in paradise
     // wp_clear_scheduled_hook( 'service_submit_event', array( $post->ID ) );
     // wp_schedule_single_event(time()+700, 'service_submit_event' , array($post->ID));
