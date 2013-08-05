@@ -91,6 +91,7 @@ function wpTomServiceSettingsPage (){
       $vgwort = get_post_meta( $result->ID , 'tom_orderDateTime' , false );
       $code = get_post_meta( $result->ID , 'tom_privateIdentificationId' , false );
       $cardNumber = get_user_meta($result->post_author, 'wp_tommeta_auth', false);
+      $status = get_user_meta($result->post_author, 'tom_status', false);
       //determine elapsed hours post date in U is seconds unixtime
       $date = new DateTime($result->post_date_gmt);
       $postdate = $date->format("U");
@@ -101,7 +102,7 @@ function wpTomServiceSettingsPage (){
       if ($elapsed > 4) {
         $soapResult = wpTomServiceCron($result->ID, $code[0], $cardNumber[0]); 
       }
-      echo '<li>Artikel ID/Titel '. $result->ID . ' <b> ' . $result->post_title . '</b> vom Datum '. $date->format("Y-m-d")  . ' und Alter ' . $elapsed . ' (mind. 5 tage) vom Autor ' . $cardNumber['0'] . ' - status: ' .  '</li>';
+      echo '<li>Artikel ID/Titel '. $result->ID . ' <b> ' . $result->post_title . '</b> vom Datum '. $date->format("Y-m-d")  . ' und Alter ' . $elapsed . ' (mind. 5 tage) vom Autor ' . $cardNumber['0'] . ' - status:</li>';
       sleep(3);
 
     }
@@ -471,14 +472,13 @@ function wpTomServiceCron($post_id, $code, $author = '') {
   $webranges['webrange'][] = $webrange;
 
   // is it a poem (NOT)
-  $isLyric = 'false';
+  $isLyric = false;
 
   // the actual article content without html
   $text = array('plainText'=>strip_tags($post->post_content));
 
   // create a VG Wort message
-  $message = array('lyric'=>'false', 'shorttext'=>$shortText, 'text'=>$text);
-
+  $message = array('shorttext'=>$shortText, 'text'=>$text , 'lyric' => $isLyric);
   try {
     // catch and throw an exception if the authentication or the authorization error occurs
     if(!@fopen(str_replace('://', '://'.WORT_USER.':'.WORT_PASS.'@', MESSAGE_SERVICE_WSDL), 'r')) {
@@ -488,11 +488,10 @@ function wpTomServiceCron($post_id, $code, $author = '') {
     $client = new SoapClient(MESSAGE_SERVICE_WSDL, array('login' => $vgWortUserId, 'password' => $vgWortUserPassword, 'exceptions'=>true, 'trace'=>1, 'features' => SOAP_SINGLE_ELEMENT_ARRAYS ));
 
     $result = $client->newMessage(array("parties"=>$parties, "privateidentificationid"=>$fpriv, "messagetext"=>$message, "webranges"=>$webranges));
-
     // we flag it's been submitted to avoid processing again. 
     // used as flag in the settings page post action. 
     update_post_meta($post->ID , 'tom_submitted',  'submitted');
-
+    error_log($client->__getLastRequest(),0);
     return $result;
     //wp_clear_scheduled_hook( 'service_submit_event', array( $post->ID, $fpriv ) );
   }
@@ -500,6 +499,7 @@ function wpTomServiceCron($post_id, $code, $author = '') {
     $detail = $soapFault->faultcode;
     update_post_meta($post->ID , 'tom_fault',  $soapFault->detail);
     return $soapFault->detail;
+    error_log($soapFault->detail);
     // yup, trouble in paradise
     // wp_clear_scheduled_hook( 'service_submit_event', array( $post->ID ) );
     // wp_schedule_single_event(time()+700, 'service_submit_event' , array($post->ID));
