@@ -51,7 +51,6 @@ add_action( 'draft_to_publish' ,  'wpTomServicePublish' );
 add_action( 'pending_to_publish' ,  'wpTomServicePublish' );
 add_action( 'private_to_publish' ,  'wpTomServicePublish' );
 add_action( 'publish_future_post', 'wpTomServiceScheduled' );
-/* as yet uneeded */
 //add_action( 'publish_to_pending' ,  'wpTomServiceDraft' );
 //add_action( 'transition_post_status' ,  'wpTomServiceDraft' );
 
