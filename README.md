@@ -9,8 +9,8 @@ Tom Service, a wordpress plugin, provides Soap calls to the German VG Wort royal
 * Url: http://netzpolitik.org/
 * Tags: VG-Wort, T.O.M., Zählpixel
 * Requires at least: 3.0
-* Tested up to: 3.5
-* Stable tag: 3.5.b1
+* Tested up to: 4.9.4
+* Stable tag: 4.9
 * License: GPLv2 or later
 * License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
