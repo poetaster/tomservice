@@ -76,7 +76,7 @@ function wpTomServiceRegisterSettingsPage() {
 function wpTomServiceSettingsPage (){
   global $wpdb;
   // REQUEST
-  $results = $wpdb->get_results("SELECT * FROM $wpdb->postmeta PM INNER JOIN $wpdb->posts P ON P.ID = PM.post_id WHERE PM.meta_key = 'tom_submitted' AND PM.meta_value ='pending' AND P.post_status = 'publish' AND P.post_type IN ('post') LIMIT 20");
+  $results = $wpdb->get_results("SELECT * FROM $wpdb->postmeta PM INNER JOIN $wpdb->posts P ON P.ID = PM.post_id WHERE PM.meta_key = 'tom_submitted' AND PM.meta_value ='pending' AND P.post_status = 'publish' AND P.post_type IN ('post') AND P.ID > 50000 ORDER BY P.post_date ASC LIMIT 20");
 
   // we should do our time checking at query .. select TIMESTAMPDIFF(MINUTE, NOW(), timestamp_column) FROM my_table 
   // but we don't as yet 
@@ -193,6 +193,18 @@ function wpTomServiceCustomColumn( $column ) {
  *
  */
 function wpTomServiceaddProfileData( $user ) {
+?>
+     <h3 id="vgwortanchor">VG Wort</h3>
+     <table>
+     <tr>
+      <th><label for="something"><?php _e('VG Wort Karteinummer'); ?></label></th>
+      <td><input type="text" name="wp_tommeta_auth" id="" value="<?php echo esc_attr(get_the_author_meta('wp_tommeta_auth', $user->ID) ); ?>" /></td>
+     </tr>
+     </table>
+
+<?php }
+
+function wpTomServiceaddExtraProfileData( $user ) {
   global $wpdb;
   if( user_can( $user->ID , 'edit_posts' ) ) {
 ?>
@@ -257,6 +269,13 @@ function action_process_option_update($user_id) {
  */
 function tomCharCount( $content ) {
   return mb_strlen(preg_replace("/\\015\\012|\\015|\\012| {2,}|\[[a-zA-Z0-9\_=\"\' \/]*\]/", "", strip_tags(html_entity_decode($result->post_title . "" . $content ))));
+  //return strlen(preg_replace("/\\015\\012|\\015|\\012| {2,}|\[[a-zA-Z0-9\_=\"\' \/]*\]/", "", wp_strip_all_tags(html_entity_decode($content ))));
+  //
+  //$text = strip_tags(strip_shortcodes(html_entity_decode($content)));
+  //return mb_strlen(preg_replace("/\\015\\012|\\015|\\012| {2,}|\[[a-zA-Z0-9\_=\"\' \/]*\]/", "", $result->post_title . "" . $text ));
+  //
+  //$text = strip_tags($content);
+  //return strlen(  $text );
 }
 
 /**
@@ -305,10 +324,22 @@ function createVGWortCustomMeta( $post ) {
   // Use nonce for verification
   wp_nonce_field( plugin_basename(__FILE__) , PLUGINNAME );
   // The actual fields for data entry
-  echo "VGwort Author Info : " . get_user_meta($post->post_author, 'last_name', true) .' : '. get_user_meta($post->post_author, 'wp_tommeta_auth', true) . "<br />";
-  echo "VGwort Messages : " . get_post_meta( $post->ID , 'tom_fault' , true) . "<br />";
-  echo 'public: <input type="input" size="150" name="tom_publicIdentificationId" value="'.get_post_meta( $post->ID , 'tom_publicIdentificationId' , true ).'" /><br />';
-  echo 'private: <input type="input" size="150" name="tom_privateIdentificationId" value="'.get_post_meta( $post->ID , 'tom_privateIdentificationId' , true ).'" /><br />';
+  //
+  try {
+    //$fault = get_post_meta( $post->ID , 'tom_fault' , true );
+    //var_dump($fault);
+    echo '<div class="vgwort-meta postbox">';
+    echo '<div class="clearfix">VGwort Author Info : ' . get_user_meta($post->post_author, 'last_name', true) .' : '. get_user_meta($post->post_author, 'wp_tommeta_auth', true) . '</div>';
+    //echo "<span>VGwort Messages : " . //get_post_meta( $post->ID , 'tom_fault' , true) . "</span><br />";
+    if (get_post_meta( $post->ID , 'tom_publicIdentificationId' , true ) ) {
+      echo '<div class="clearfix">public: <input type="input" size="40" name="tom_publicIdentificationId" value="'. get_post_meta( $post->ID , 'tom_publicIdentificationId' , true ) .'" /></div>';
+      echo '<div class="clearfix">private: <input type="input" size="40" name="tom_privateIdentificationId" value="'. get_post_meta( $post->ID , 'tom_privateIdentificationId' , true ) .'" /></div>';
+    }
+    echo '</div>';
+  } catch (Exception $e) {
+   echo 'Caught exception: ',  $e->getMessage(), "\n";
+   error_log($e->getMessage(),0);
+  }
 }
 
 /**
@@ -381,10 +412,14 @@ function wpTomServicePublish( $post ) {
       $vgWortUserPassword = WORT_PASS;
       try {
         // catch and throw an exception if the authentication or an authorization error occurs
+        /*
         if(!@fopen(str_replace('://', '://'.$vgWortUserId.':'.$vgWortUserPassword.'@', PIXEL_SERVICE_WSDL), 'r')) {
+          // THIS was the message that worked till 07 2015
+          // the method without gets a default soapFault object with methods
           $httpString = explode(" ", $http_response_header[0]);
           throw new SoapFault('httpError', $httpString[1]);
         }
+         */
         // initialize client
         $client = new SoapClient(PIXEL_SERVICE_WSDL, array('login' => $vgWortUserId, 'password' => $vgWortUserPassword, 'exceptions'=>true, 'trace'=>1, 'features' => SOAP_SINGLE_ELEMENT_ARRAYS));
         $result = $client->orderPixel(array("count"=>'1'));
@@ -409,7 +444,10 @@ function wpTomServicePublish( $post ) {
         }
         $detail = $soapFault->detail;
         $function = $detail->orderPixelFault;
-        update_post_meta($post->ID , 'tom_fault',  $function->errorcode);
+        error_log(print_r($soapFault->getMessage(),true),0);
+        error_log($soapFault->faultcode,0);
+        error_log($soapFault->faultstring,0);
+        update_post_meta($post->ID , 'tom_fault',  $soapFault->getMessage());
       }
     }
   }
@@ -465,7 +503,7 @@ function wpTomServiceCron($post_id, $code, $author = '') {
   $parties = array('authors'=>$authors);
 
   // shortext is title truncated
-  $shortText = substr($post->post_title, 0, 99);
+  $shortText = mb_substr($post->post_title, 0, 99);
 
   // webrange is the url(s).
   $webrange = array('url'=>array(get_permalink($post->ID)));
@@ -475,7 +513,10 @@ function wpTomServiceCron($post_id, $code, $author = '') {
   $isLyric = false;
 
   // the actual article content without html
-  $text = array('plainText'=>strip_tags($post->post_content));
+  $excpt = strip_tags(get_the_excerpt($post->ID));
+  $maint = strip_shortcodes(strip_tags($post->post_content));
+  $fullt = $excpt . $maint;
+  $text = array('plainText'=>$fullt);
 
   // create a VG Wort message
   $message = array('shorttext'=>$shortText, 'text'=>$text , 'lyric' => $isLyric);
@@ -492,12 +533,13 @@ function wpTomServiceCron($post_id, $code, $author = '') {
     // used as flag in the settings page post action. 
     update_post_meta($post->ID , 'tom_submitted',  'submitted');
     // the following permits seeing the actual xml data submitted
-    //error_log($client->__getLastRequest(),0);
+    error_log($client->__getLastRequest(),0);
     return $result;
     //wp_clear_scheduled_hook( 'service_submit_event', array( $post->ID, $fpriv ) );
   }
   catch (SoapFault $soapFault) {
     $detail = $soapFault->faultcode;
+    error_log($soapFault,0);
     update_post_meta($post->ID , 'tom_fault',  $soapFault->detail);
     return $soapFault->detail;
     // yup, trouble in paradise
