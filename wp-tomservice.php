@@ -50,6 +50,7 @@ add_action( 'admin_menu' ,  'wpTomServiceRegisterSettingsPage' );
 add_action( 'draft_to_publish' ,  'wpTomServicePublish' );
 add_action( 'pending_to_publish' ,  'wpTomServicePublish' );
 add_action( 'private_to_publish' ,  'wpTomServicePublish' );
+add_action( 'publish_future_post' ,  'wpTomServiceScheduled' );
 //add_action( 'publish_to_pending' ,  'wpTomServiceDraft' );
 //add_action( 'transition_post_status' ,  'wpTomServiceDraft' );
 
@@ -57,6 +58,12 @@ add_action( 'private_to_publish' ,  'wpTomServicePublish' );
 //add_action('service_submit_event', array( &$this, 'wpTomServiceCron'), 10, 1);
 add_action('service_submit_event', 'wpTomServiceCron',2);
 
+/* Setup cron */
+add_action( 'wpTomService_cron_hook', array('wpTomService', 'wpTomServiceCLI') );
+
+if ( ! wp_next_scheduled( 'wpTomService_cron_hook' ) ) {
+    wp_schedule_event( time(), 'five_seconds', 'wpTomService_cron_hook' );
+}
 
 /**
  *
@@ -64,9 +71,42 @@ add_action('service_submit_event', 'wpTomServiceCron',2);
  * @param: none
  *
  */
+
 function wpTomServiceRegisterSettingsPage() {
   add_submenu_page( 'options-general.php' , 'VG TOM Service', 'VG TOM Service' , 'add_users', 'wpTomServiceSettings',     'wpTomServiceSettingsPage' );    
 }
+
+function wpTomServiceCLI(){
+  global $wpdb;
+  // REQUEST
+  $results = $wpdb->get_results("SELECT * FROM $wpdb->postmeta PM INNER JOIN $wpdb->posts P ON P.ID = PM.post_id WHERE PM.meta_key = 'tom_submitted' AND PM.meta_value ='pending' AND P.post_status = 'publish' AND P.post_type IN ('post') AND P.ID > 50000 ORDER BY P.post_date ASC LIMIT 20");
+
+  // we should do our time checking at query .. select TIMESTAMPDIFF(MINUTE, NOW(), timestamp_column) FROM my_table 
+  // but we don't as yet 
+  // also, the limit here is a lousy solution
+
+    //update_option('wp_tommeta' , $_POST['wptommeta']);
+    $t_time = time();
+    foreach($results as $result){
+      // fetch the time the pixels were ordered
+      $vgwort = get_post_meta( $result->ID , 'tom_orderDateTime' , false );
+      $code = get_post_meta( $result->ID , 'tom_privateIdentificationId' , false );
+      $cardNumber = get_user_meta($result->post_author, 'wp_tommeta_auth', false);
+      $status = get_user_meta($result->post_author, 'tom_status', false);
+      //determine elapsed hours post date in U is seconds unixtime
+      $date = new DateTime($result->post_date_gmt);
+      $postdate = $date->format("U");
+      // now days
+      $elapsed = (time() - $postdate )  / 86400;
+
+      // only submit if older than 5 days
+      if ($elapsed > 4) {
+        $soapResult = wpTomServiceCron($result->ID, $code[0], $cardNumber[0]);
+        //echo $soapResult;
+      }
+    }
+}
+
 /**
  *
  * Add Html for the settingspage
@@ -451,6 +491,15 @@ function wpTomServicePublish( $post ) {
       }
     }
   }
+}
+
+/*
+* submit when future scheduled goes live
+*
+*/
+function wpTomServiceScheduled( $post_id ) {
+  $post = get_post($post_id);
+   wpTomServicePublish( $post );
 }
 
 /*
