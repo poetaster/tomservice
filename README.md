@@ -67,9 +67,9 @@ IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING WILL ANY C
 
 == Changelog ==
 
-= 3.5.b1 =
-* start of Plugin
 = 5.0 =
 * test of wp 5.0 and additional function for cron
+= 3.5.b1 =
+* start of Plugin
 
 == NO WARRANTY ==
