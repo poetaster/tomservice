@@ -9,8 +9,8 @@ Tom Service, a wordpress plugin, provides Soap calls to the German VG Wort royal
 * Url: http://netzpolitik.org/
 * Tags: VG-Wort, T.O.M., Zählpixel
 * Requires at least: 3.0
-* Tested up to: 4.9.4
-* Stable tag: 3.5.b1
+* Tested up to: 5.0
+* Stable tag: 5.0
 * License: GPLv2 or later
 * License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -38,6 +38,7 @@ Folgende Funktionen bietet das Plugin
 - Übersicht im Profil in welchen Beiträgen VG Wort Zählmarken noch fehlen, welche die Bedingungen von VG Wort erfüllen
 - Erstellen des Autoren 'cardNumber' (Karteinummer) Feldes im Autoren Profil
 - Anmelden der Artikel (5 Tage mindest Alter) auf der Settings Seite
+- Mittels Funktion Meldungen senden (bzw. cron) mit WP: sudo -u www wp eval 'wpTomServiceCLI();'
 
 == Installation ==
 
@@ -68,5 +69,7 @@ IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING WILL ANY C
 
 = 3.5.b1 =
 * start of Plugin
+= 5.0 =
+* test of wp 5.0 and additional function for cron
 
 == NO WARRANTY ==
