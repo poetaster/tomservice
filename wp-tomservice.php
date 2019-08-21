@@ -44,13 +44,14 @@ add_action( 'manage_pages_custom_column' ,  'wpTomServiceCustomColumn' );
 add_action( 'admin_footer' ,     'wpTomServiceAdminFooter' );
 add_filter( 'manage_posts_columns' ,  'wpTomServiceColumn' );
 add_filter( 'manage_pages_columns' ,  'wpTomServiceColumn' );
+
 add_action( 'admin_menu' ,  'wpTomServiceRegisterSettingsPage' );
 
 /* various actions to handle moving from transitions. we fetch pixels on -> publish */
-add_action( 'draft_to_publish' ,  'wpTomServicePublish' );
+add_action( 'draft_to_publish'   ,  'wpTomServicePublish' );
 add_action( 'pending_to_publish' ,  'wpTomServicePublish' );
 add_action( 'private_to_publish' ,  'wpTomServicePublish' );
-add_action( 'publish_future_post' ,  'wpTomServiceScheduled' );
+add_action( 'publish_future_post'  ,  'wpTomServiceScheduled' );
 //add_action( 'publish_to_pending' ,  'wpTomServiceDraft' );
 //add_action( 'transition_post_status' ,  'wpTomServiceDraft' );
 
