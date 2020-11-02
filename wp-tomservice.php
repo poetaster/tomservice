@@ -210,9 +210,11 @@ function wpTomServiceDraft( $post ) {
 
 function wpTomServiceCron($post_id, $code, $author = '') {
   $post = get_post($post_id);
+
   $surName = get_user_meta($post->post_author, 'last_name', true) ;
   $givenName = get_user_meta($post->post_author, 'first_name', true) ;
   $cardNumber = $author;
+
   if ($cardNumber == '' || $cardNumber == NULL ) { 
     $error =  "sorry! $cardNumber not a valid cardNumber"; 
     return $error;
@@ -226,9 +228,21 @@ function wpTomServiceCron($post_id, $code, $author = '') {
   $vgWortUserId = WORT_USER;
   $vgWortUserPassword = WORT_PASS;
 
-  // get authors information: vg wort card number, first (max. 40 characters) and last name
   $authors = array('author'=>array());
-  $authors['author'][] = array('cardNumber'=>$cardNumber, 'firstName'=>substr($givenName, 0, 39), 'surName'=>$surName);
+
+  // get authors information: vg wort card number, first (max. 40 characters) and last name
+  if(function_exists("additional_authors_get_the_authors_ids")){
+     foreach (additional_authors_get_the_authors_ids($post_id) as $author_id){
+          $surName = get_user_meta($author_id, 'last_name', true) ;
+          $givenName = get_user_meta($author_id, 'first_name', true) ;
+          $cardNumbers = get_user_meta($author_id, 'wp_tommeta_auth', false);
+          $cardNumber = $cardNumbers[0];
+          $authors['author'][] = array('cardNumber'=>$cardNumber, 'firstName'=>substr($givenName, 0, 39), 'surName'=>$surName);
+     }
+  } else {
+    $authors['author'][] = array('cardNumber'=>$cardNumber, 'firstName'=>substr($givenName, 0, 39), 'surName'=>$surName);
+  }
+
   $parties = array('authors'=>$authors);
 
   // shortext is title truncated
