@@ -49,6 +49,9 @@ Folgende Funktionen bietet das Plugin
 * - define(WORT_PASS, 'passwort');
 * - define(WORT_KARTEI, 'vgwortverlegerkartei');
 * Erstelle die 'cardNumber' (Karteinummer) fuer mindestens ein Autor
+* Richte einen cron job ein um Anmeldungen automatisch durchzufuehren:
+    1 0 * * * cd /var/www/wp-root/;  /usr/local/bin/wp --allow-root eval 'wpTomServiceCLI();'  >> /var/log/wp-cron.log 2>&1
+
 * Fertig, nun befindet sich in Beiträgen die von 'In Bearbeitung' auf 'Veroeffentlicht' geschaltet werden die Pixelcode img tags
 
 == Frequently Asked Questions ==
