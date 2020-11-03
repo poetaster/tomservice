@@ -77,7 +77,8 @@ if ( ! wp_next_scheduled( 'wpTomService_cron_hook' ) ) {
  */
 
 function wpTomServiceRegisterSettingsPage() {
-  add_submenu_page( 'options-general.php' , 'VG TOM Service', 'VG TOM Service' , 'add_users', 'wpTomServiceSettings',     'wpTomServiceSettingsPage' );    
+  add_submenu_page( 'options-general.php' , '', 'VG TOM Service' , 'add_users', 'wpTomServiceSettings',     'wpTomServiceSettingsPage' );
+  add_submenu_page( 'options-general.php' , 'wpTomServiceSettings', 'VG TOM Request' , 'add_users', 'wpTomServiceRequest',     'wpTomServiceRequestPage' );
 }
 
 function wpTomServiceCLI(){
@@ -323,7 +324,38 @@ function checkAuthor($cardNo, $surName) {
   }
 }
 
+/**
+ * researchMetisMessagesRequest returns information about submission
+ *
+ * @param $title string (regexp allowed) 
+ * @return array (ResearchedMetisMessage xml, errorMsg string)
+ *
+ * FIX ME currently not used.
+ */
+function researchMetisMessages($title) {
+  $vgWortUserId = WORT_USER;
+  $vgWortUserPassword = WORT_PASS;
 
+  try {
+    // catch and throw an exception if the authentication or the authorization error occurs
+    if(!@fopen(str_replace('://', '://'.$vgWortUserId.':'.$vgWortUserPassword.'@', MESSAGE_SERVICE_WSDL), 'r')) {
+      $httpString = explode(" ", $http_response_header[0]);
+      throw new SoapFault('httpError', $httpString[1]);
+    }
+    $client = new SoapClient(MESSAGE_SERVICE_WSDL, array('login' => $vgWortUserId, 'password' => $vgWortUserPassword, 'exceptions'=>true, 'trace'=>1, 'features' => SOAP_SINGLE_ELEMENT_ARRAYS ));
+
+    $result = $client->researchMetisMessages(array("title"=>$title));
+    return (array) $result;
+  }
+  catch (SoapFault $soapFault) {
+    if($soapFault->faultcode == 'noWSDL' || $soapFault->faultcode == 'httpError') {
+      return array(false, $soapFault->faultstring);
+    }
+    $detail = $soapFault->detail;
+    $function = $detail->researchMetisMessagesFault;
+    return array(false, $function->errorcode);
+  }
+}
 
 // end class
 ?>

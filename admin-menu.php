@@ -72,6 +72,20 @@ function wpTomServiceSettingsPage (){
 }
 
 /**
+ * wpTomServiceRequestPage
+ * takes a string and requests information from TOM about titles that match.
+ *
+ */
+
+function wpTomServiceRequestPage() {
+    echo '<div class="wrap">';
+    $metisMessage = researchMetisMessages("Interne Dokumente: Wie die EU-Staaten*");
+    var_dump($metisMessage);
+    echo '</div>';
+}
+
+
+/**
  *
  * Add the value of counted Chars in the Footer of RTE
  * @param: none
@@ -225,8 +239,6 @@ function wpTomServiceDisplay( $content ) {
   $domain = get_post_meta( $post->ID , 'tom_Domain' , false );
   $domain = $domain[0];
 
-  #echo $_SERVER['HTTPS'] . ' and  ' . $_SERVER['SERVER_PORT'];
-  
   if(!empty( $pixel )){
     if ( $_SERVER['SERVER_PORT'] == '80' ) {
       $content .= '<div class="vgwort"><img src="http://'. $domain . '/na/' . $pixel .'" width="1" height="1" alt="" ></img></div>';
@@ -260,7 +272,6 @@ function createVGWortCustomMeta( $post ) {
   //
   try {
     //$fault = get_post_meta( $post->ID , 'tom_fault' , true );
-    //var_dump($fault);
     echo '<div class="vgwort-meta postbox">';
     echo '<div class="clearfix">VGwort Author Info : ' . get_user_meta($post->post_author, 'last_name', true) .' : '. get_user_meta($post->post_author, 'wp_tommeta_auth', true) . '</div>';
     //echo "<span>VGwort Messages : " . //get_post_meta( $post->ID , 'tom_fault' , true) . "</span><br />";
