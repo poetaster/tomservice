@@ -5,7 +5,7 @@ Tom Service, a wordpress plugin, provides Soap calls to the German VG Wort royal
 
 === WP-TOMSERVICE ===
 
-* Contributors: mwa@newthinking.de
+* Contributors: mwa@netzpolitik.org
 * Url: http://netzpolitik.org/
 * Tags: VG-Wort, T.O.M., Zählpixel
 * Requires at least: 3.0
@@ -56,7 +56,7 @@ Folgende Funktionen bietet das Plugin
 
 == Frequently Asked Questions ==
 
-Diskussion mwa@newthinking.de
+Diskussion mwa@netzpolitik.org
 
 == Screenshots ==
 
