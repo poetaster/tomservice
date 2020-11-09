@@ -329,11 +329,11 @@ function checkAuthor($cardNo, $surName) {
 /**
  * researchMetisMessagesRequest returns information about submission
  *
- * @param $title string (regexp allowed) 
+ * @param $cardNumber int
  * @return array (ResearchedMetisMessage xml, errorMsg string)
  *
  */
-function researchMetisMessages($title) {
+function researchMetisMessages($cardNumber) {
   $vgWortUserId = WORT_USER;
   $vgWortUserPassword = WORT_PASS;
 
@@ -350,7 +350,7 @@ function researchMetisMessages($title) {
     $client = new SoapClient(MESSAGE_SERVICE_WSDL, array('login' => $vgWortUserId, 'password' => $vgWortUserPassword, 'exceptions'=>true, 'trace'=>1, 'features' => SOAP_SINGLE_ELEMENT_ARRAYS ));
 
     //$result = $client->researchMetisMessages(array("title"=>$title,"offset"=>"10","amount">="5","webranges"=>$webranges));
-    $result = $client->researchMetisMessages(array("offset"=>"0","amount">="5","cardNumber"=>'1274215'));
+    $result = $client->researchMetisMessages(array("offset"=>"0","cardNumber"=>$cardNumber));
     return (array) $result;
   }
   catch (SoapFault $soapFault) {

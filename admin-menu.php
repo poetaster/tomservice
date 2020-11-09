@@ -15,7 +15,7 @@ function wpTomServiceSettingsPage (){
   // but we don't as yet 
   // also, the limit here is a lousy solution
 
-  if(isset($_POST[ 'save' ])){
+  if(isset($_POST[ 'save' ]) && isset( $_POST['tomsettings']) && wp_verify_nonce( $_POST['tomsettings'], 'wpTomServiceSettings' )){
     //update_option('wp_tommeta' , $_POST['wptommeta']);
     $t_time = time();
     echo '<ul> <div class="wrap">';
@@ -58,6 +58,7 @@ function wpTomServiceSettingsPage (){
                     <tr valign="top">
                     <th scope="row"> <label for="speichern">Artikel anmelden (5 auf einmal):</label> </th>
                     <td>
+                    <?php wp_nonce_field( 'wpTomServiceSettings', 'tomsettings' ); ?>
                     <input type="submit" name="save" value="Bei T.O.M anmelden" class="button-primary" / >
                  </td>
                 </tr>
@@ -80,13 +81,22 @@ function wpTomServiceSettingsPage (){
 function wpTomServiceRequestPage() {
   echo '<div class="wrap"><h2>T.O.M. Meldungssuche</h2><p>Karteinummber angeben und suchen</p>';
 
-    if(isset($_POST[ 'research' ])){
+    if(isset($_POST[ 'research' ]) && isset( $_POST['tomrequest']) && wp_verify_nonce( $_POST['tomrequest'], 'wpTomServiceRequest' )){
       $metisMessage = researchMetisMessages($_POST['cardNumber']);
+
+      foreach($metisMessage['ResearchedMetisMessage'] as $row){
+        echo '<span>' . $row->title . '</span>, <span>' . $row->createdDate . '</span><br>';
+        echo '<span>&nbsp;&nbsp;-- Autoren: ';
+        foreach($row->parties->authors->author as $author){
+          echo  $author->surName . '&nbsp; &nbsp;';
+        }
+        echo '<br>';
+      }
     }
-    var_dump($metisMessage);
 ?>
       <form method="POST" action="">
-        <input type="text" name="cardNumber" value="" class="button-primary" / >
+        <input type="text" name="cardNumber" value="" class="input" / >
+        <?php wp_nonce_field( 'wpTomServiceRequest', 'tomrequest' ); ?>
         <input type="submit" name="research" value="Bei T.O.M Suchen" class="button-primary" / >
       </form>
 <?php
