@@ -78,10 +78,20 @@ function wpTomServiceSettingsPage (){
  */
 
 function wpTomServiceRequestPage() {
-    echo '<div class="wrap">';
-    $metisMessage = researchMetisMessages("Interne Dokumente: Wie die EU-Staaten*");
+  echo '<div class="wrap"><h2>T.O.M. Meldungssuche</h2><p>Karteinummber angeben und suchen</p>';
+
+    if(isset($_POST[ 'research' ])){
+      $metisMessage = researchMetisMessages($_POST['cardNumber']);
+    }
     var_dump($metisMessage);
-    echo '</div>';
+?>
+      <form method="POST" action="">
+        <input type="text" name="cardNumber" value="" class="button-primary" / >
+        <input type="submit" name="research" value="Bei T.O.M Suchen" class="button-primary" / >
+      </form>
+<?php
+  echo '</div>';
+
 }
 
 

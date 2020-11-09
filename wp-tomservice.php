@@ -19,10 +19,10 @@ define('TOMMETA_PRIV', get_option('wp_tommeta_priv', 'wp_vgwortmarke_priv'));
 define('TOMMETA_PUB', get_option('wp_tommeta_pub', 'wp_vgwortmarke_pub'));
 define('TOMMETA_AUTH', get_option('wp_tommeta_auth', 'wp_vgwortmarke_auth'));
 
-//define('PIXEL_SERVICE_WSDL', 'https://tom.vgwort.de/services/1.0/pixelService.wsdl');
-//define('MESSAGE_SERVICE_WSDL', 'https://tom.vgwort.de/services/1.2/messageService.wsdl');
+#define('PIXEL_SERVICE_WSDL', 'https://tom.vgwort.de/services/1.0/pixelService.wsdl');
+#define('MESSAGE_SERVICE_WSDL', 'https://tom.vgwort.de/services/1.13/messageService.wsdl');
 define('PIXEL_SERVICE_WSDL', 'https://tom-test.vgwort.de/services/1.0/pixelService.wsdl');
-define('MESSAGE_SERVICE_WSDL', 'https://tom-test.vgwort.de/services/1.2/messageService.wsdl');
+define('MESSAGE_SERVICE_WSDL', 'https://tom-test.vgwort.de/services/1.13/messageService.wsdl');
 
 define('WORT_USER', getenv('WORT_USER'));
 define('WORT_PASS', getenv('WORT_PASS'));
@@ -241,10 +241,12 @@ function wpTomServiceCron($post_id, $code, $author = '') {
           $authors['author'][] = array('cardNumber'=>$cardNumber, 'firstName'=>substr($givenName, 0, 39), 'surName'=>$surName);
      }
   } else {
+    echo "something died";
     $authors['author'][] = array('cardNumber'=>$cardNumber, 'firstName'=>substr($givenName, 0, 39), 'surName'=>$surName);
   }
 
   $parties = array('authors'=>$authors);
+  //var_dump($parties);
 
   // shortext is title truncated
   $shortText = mb_substr($post->post_title, 0, 99);
@@ -330,11 +332,14 @@ function checkAuthor($cardNo, $surName) {
  * @param $title string (regexp allowed) 
  * @return array (ResearchedMetisMessage xml, errorMsg string)
  *
- * FIX ME currently not used.
  */
 function researchMetisMessages($title) {
   $vgWortUserId = WORT_USER;
   $vgWortUserPassword = WORT_PASS;
+
+  // webrange is the url(s).
+  $webrange = array('url'=>array(get_permalink($post->ID)));
+  $webranges['webrange'][] = $webrange;
 
   try {
     // catch and throw an exception if the authentication or the authorization error occurs
@@ -344,16 +349,15 @@ function researchMetisMessages($title) {
     }
     $client = new SoapClient(MESSAGE_SERVICE_WSDL, array('login' => $vgWortUserId, 'password' => $vgWortUserPassword, 'exceptions'=>true, 'trace'=>1, 'features' => SOAP_SINGLE_ELEMENT_ARRAYS ));
 
-    $result = $client->researchMetisMessages(array("title"=>$title));
+    //$result = $client->researchMetisMessages(array("title"=>$title,"offset"=>"10","amount">="5","webranges"=>$webranges));
+    $result = $client->researchMetisMessages(array("offset"=>"0","amount">="5","cardNumber"=>'1274215'));
     return (array) $result;
   }
   catch (SoapFault $soapFault) {
     if($soapFault->faultcode == 'noWSDL' || $soapFault->faultcode == 'httpError') {
       return array(false, $soapFault->faultstring);
     }
-    $detail = $soapFault->detail;
-    $function = $detail->researchMetisMessagesFault;
-    return array(false, $function->errorcode);
+    return $soapFault;
   }
 }
 
