@@ -19,10 +19,10 @@ define('TOMMETA_PRIV', get_option('wp_tommeta_priv', 'wp_vgwortmarke_priv'));
 define('TOMMETA_PUB', get_option('wp_tommeta_pub', 'wp_vgwortmarke_pub'));
 define('TOMMETA_AUTH', get_option('wp_tommeta_auth', 'wp_vgwortmarke_auth'));
 
-#define('PIXEL_SERVICE_WSDL', 'https://tom.vgwort.de/services/1.0/pixelService.wsdl');
-#define('MESSAGE_SERVICE_WSDL', 'https://tom.vgwort.de/services/1.13/messageService.wsdl');
-define('PIXEL_SERVICE_WSDL', 'https://tom-test.vgwort.de/services/1.0/pixelService.wsdl');
-define('MESSAGE_SERVICE_WSDL', 'https://tom-test.vgwort.de/services/1.13/messageService.wsdl');
+define('PIXEL_SERVICE_WSDL', 'https://tom.vgwort.de/services/1.0/pixelService.wsdl');
+define('MESSAGE_SERVICE_WSDL', 'https://tom.vgwort.de/services/1.13/messageService.wsdl');
+#define('PIXEL_SERVICE_WSDL', 'https://tom-test.vgwort.de/services/1.0/pixelService.wsdl');
+#define('MESSAGE_SERVICE_WSDL', 'https://tom-test.vgwort.de/services/1.13/messageService.wsdl');
 
 define('WORT_USER', getenv('WORT_USER'));
 define('WORT_PASS', getenv('WORT_PASS'));
@@ -36,7 +36,7 @@ add_action('personal_options_update', 'action_process_option_update');
 add_action('edit_user_profile_update', 'action_process_option_update');
 
 add_action( 'add_meta_boxes' ,  'wpTomServiceAddCustomMeta' );
-add_action( 'save_post' ,  'wpTomServiceSavePost' );
+//add_action( 'save_post' ,  'wpTomServiceSavePost' );
 add_filter( 'the_content' ,   'wpTomServiceDisplay' );
 
 /* actions to handle interface elements and counts for admin pages/posts */
@@ -105,7 +105,9 @@ function wpTomServiceCLI(){
       $elapsed = (time() - $postdate )  / 86400;
 
       // only submit if older than 5 days
-      if ($elapsed > 4) {
+      //echo $elapsed . "\n\n";
+      //
+      if ($elapsed > 5) {
         $soapResult = wpTomServiceCron($result->ID, $code[0], $cardNumber[0]);
         //echo $soapResult;
       }

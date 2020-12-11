@@ -9,8 +9,8 @@ Tom Service, a wordpress plugin, provides Soap calls to the German VG Wort royal
 * Url: http://netzpolitik.org/
 * Tags: VG-Wort, T.O.M., Zählpixel
 * Requires at least: 3.0
-* Tested up to: 5.5.3
-* Stable tag: 5.5
+* Tested up to: 5.6
+* Stable tag: 5.6
 * License: GPLv2 or later
 * License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -39,6 +39,9 @@ Folgende Funktionen bietet das Plugin
 - Erstellen des Autoren 'cardNumber' (Karteinummer) Feldes im Autoren Profil
 - Anmelden der Artikel (5 Tage mindest Alter) auf der Settings Seite
 - Mittels Funktion Meldungen senden (bzw. cron) mit WP: sudo -u www wp eval 'wpTomServiceCLI();'
+- Abruf der Meldungen per Nutzer (liste der letzten 100 Meldungen)
+- Artikel mit mehrer Autoren werden auch mit dennen gemeldet. Benoetigt: https://de.wordpress.org/plugins/additional-authors/ aber modifiziert.
+
 
 == Installation ==
 
@@ -69,6 +72,8 @@ BECAUSE THE PROGRAM IS LICENSED FREE OF CHARGE, THERE IS NO WARRANTY FOR THE PRO
 IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MAY MODIFY AND/OR REDISTRIBUTE THE PROGRAM AS PERMITTED ABOVE, BE LIABLE TO YOU FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED TO LOSS OF DATA OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
 
 == Changelog ==
+
+= 5.6 = functional multi-author support
 
 = 5.3 = working toward multiple author support
 
