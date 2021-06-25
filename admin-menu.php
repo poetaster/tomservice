@@ -261,9 +261,9 @@ function wpTomServiceDisplay( $content ) {
 
   if(!empty( $pixel )){
     if ( $_SERVER['SERVER_PORT'] == '80' ) {
-      $content .= '<div class="vgwort"><img src="http://'. $domain . '/na/' . $pixel .'" width="1" height="1" alt="vgwort" /></div>';
+      $content .= '<span class="vgwort"><img src="http://'. $domain . '/na/' . $pixel .'" width="1" height="1" alt="vgwort" /></span>';
     } else {
-      $content .= '<div class="vgwort"><img src="https://ssl-'. $domain . '/na/' . $pixel .'" width="1" height="1" alt="vgwort" /></div>';
+      $content .= '<span class="vgwort"><img src="https://ssl-'. $domain . '/na/' . $pixel .'" width="1" height="1" alt="vgwort" /></span>';
     }
   }
   return $content;
