@@ -84,7 +84,7 @@ function wpTomServiceRegisterSettingsPage() {
 function wpTomServiceCLI(){
   global $wpdb;
   // REQUEST
-  $results = $wpdb->get_results("SELECT * FROM $wpdb->postmeta PM INNER JOIN $wpdb->posts P ON P.ID = PM.post_id WHERE PM.meta_key = 'tom_submitted' AND PM.meta_value ='pending' AND P.post_status = 'publish' AND P.post_type IN ('post') AND P.ID > 50000 ORDER BY P.post_date ASC LIMIT 20");
+  $results = $wpdb->get_results("SELECT * FROM $wpdb->postmeta PM INNER JOIN $wpdb->posts P ON P.ID = PM.post_id WHERE PM.meta_key = 'tom_submitted' AND PM.meta_value ='pending' AND P.post_status = 'publish' AND P.post_type IN ('post') AND P.ID > 50000 ORDER BY P.post_date ASC LIMIT 100");
 
   // we should do our time checking at query .. select TIMESTAMPDIFF(MINUTE, NOW(), timestamp_column) FROM my_table 
   // but we don't as yet 
@@ -105,7 +105,8 @@ function wpTomServiceCLI(){
       $elapsed = (time() - $postdate )  / 86400;
 
       // only submit if older than 5 days
-      //echo $elapsed . "\n\n";
+      //echo $result->post_date_gmt . "\n\n";
+      //echo $result->ID . "\n\n";
       //
       if ($elapsed > 5) {
         $soapResult = wpTomServiceCron($result->ID, $code[0], $cardNumber[0]);
@@ -218,15 +219,16 @@ function wpTomServiceCron($post_id, $code, $author = '') {
   $givenName = get_user_meta($post->post_author, 'first_name', true) ;
   $cardNumber = $author;
 
-  if ($cardNumber == '' || $cardNumber == NULL ) { 
+  if ($cardNumber == '' || $cardNumber == NULL || $cardNumber == '2051162') {
     $error =  "sorry! $cardNumber not a valid cardNumber"; 
+    //echo $error . "\n\n";
     return $error;
   } 
   // this is weird, get post meta  won't work reliably this context!
   // $fpriv = get_post_meta($post->ID , 'tom_privateIdentificationId', true) ;
   // $fpriv = $fpriv[0] ;
   $fpriv = $code;
-
+  
   // fetched/set from wp-config.php
   $vgWortUserId = WORT_USER;
   $vgWortUserPassword = WORT_PASS;
@@ -240,15 +242,16 @@ function wpTomServiceCron($post_id, $code, $author = '') {
           $givenName = get_user_meta($author_id, 'first_name', true) ;
           $cardNumbers = get_user_meta($author_id, 'wp_tommeta_auth', false);
           $cardNumber = $cardNumbers[0];
-          $authors['author'][] = array('cardNumber'=>$cardNumber, 'firstName'=>substr($givenName, 0, 39), 'surName'=>$surName);
+          if ($surName != 'Dinges') {
+            $authors['author'][] = array('cardNumber'=>$cardNumber, 'firstName'=>substr($givenName, 0, 39), 'surName'=>$surName);
+          }
      }
   } else {
-    echo "something died";
     $authors['author'][] = array('cardNumber'=>$cardNumber, 'firstName'=>substr($givenName, 0, 39), 'surName'=>$surName);
   }
 
   $parties = array('authors'=>$authors);
-  //var_dump($parties);
+  var_dump($parties);
 
   // shortext is title truncated
   $shortText = mb_substr($post->post_title, 0, 99);
@@ -281,7 +284,9 @@ function wpTomServiceCron($post_id, $code, $author = '') {
     // used as flag in the settings page post action. 
     update_post_meta($post->ID , 'tom_submitted',  'submitted');
     // the following permits seeing the actual xml data submitted
-    error_log($client->__getLastRequest(),0);
+    //error_log($client->__getLastRequest(),0);
+    //error_log($client->__getLastRequest(),0);
+    // var_dump($result);
     return $result;
     //wp_clear_scheduled_hook( 'service_submit_event', array( $post->ID, $fpriv ) );
   }
@@ -289,11 +294,16 @@ function wpTomServiceCron($post_id, $code, $author = '') {
     $detail = $soapFault->faultcode;
     error_log($soapFault,0);
     update_post_meta($post->ID , 'tom_fault',  $soapFault->detail);
+    update_post_meta($post->ID , 'tom_submitted',  'pending');
+    // echo $post->ID ."\n\n";
+    // var_dump($soapFault->detail);
     return $soapFault->detail;
+    
     // yup, trouble in paradise
     // wp_clear_scheduled_hook( 'service_submit_event', array( $post->ID ) );
     // wp_schedule_single_event(time()+700, 'service_submit_event' , array($post->ID));
-  } 
+  }
+
 }
 
 /**
