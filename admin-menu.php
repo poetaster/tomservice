@@ -260,11 +260,7 @@ function wpTomServiceDisplay( $content ) {
   $domain = $domain[0];
 
   if(!empty( $pixel )){
-    if ( $_SERVER['SERVER_PORT'] == '80' ) {
-      $content .= '<span class="vgwort"><img src="http://'. $domain . '/na/' . $pixel .'" width="1" height="1" alt="vgwort" /></span>';
-    } else {
-      $content .= '<span class="vgwort"><img src="https://ssl-'. $domain . '/na/' . $pixel .'" width="1" height="1" alt="vgwort" /></span>';
-    }
+      $content .= '<span class="vgwort"><img src="https://'. $domain . '/na/' . $pixel .'" width="1" height="1"/></span>';
   }
   return $content;
 
