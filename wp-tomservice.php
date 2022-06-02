@@ -219,7 +219,7 @@ function wpTomServiceCron($post_id, $code, $author = '') {
   $givenName = get_user_meta($post->post_author, 'first_name', true) ;
   $cardNumber = $author;
 
-  if ($cardNumber == '' || $cardNumber == NULL || $cardNumber == '2051162') {
+  if ($cardNumber == '' || $cardNumber == NULL) {
     $error =  "sorry! $cardNumber not a valid cardNumber"; 
     //echo $error . "\n\n";
     return $error;
@@ -242,16 +242,14 @@ function wpTomServiceCron($post_id, $code, $author = '') {
           $givenName = get_user_meta($author_id, 'first_name', true) ;
           $cardNumbers = get_user_meta($author_id, 'wp_tommeta_auth', false);
           $cardNumber = $cardNumbers[0];
-          if ($surName != 'Dinges') {
-            $authors['author'][] = array('cardNumber'=>$cardNumber, 'firstName'=>substr($givenName, 0, 39), 'surName'=>$surName);
-          }
+          $authors['author'][] = array('cardNumber'=>$cardNumber, 'firstName'=>substr($givenName, 0, 39), 'surName'=>$surName);
      }
   } else {
     $authors['author'][] = array('cardNumber'=>$cardNumber, 'firstName'=>substr($givenName, 0, 39), 'surName'=>$surName);
   }
 
   $parties = array('authors'=>$authors);
-  var_dump($parties);
+  if ($debug_flag) var_dump($parties);
 
   // shortext is title truncated
   $shortText = mb_substr($post->post_title, 0, 99);

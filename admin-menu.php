@@ -260,7 +260,7 @@ function wpTomServiceDisplay( $content ) {
   $domain = $domain[0];
 
   if(!empty( $pixel )){
-      $content .= '<span class="vgwort"><img src="https://'. $domain . '/na/' . $pixel .'" width="1" height="1"/></span>';
+      $content .= '<span class="vgwort"><img src="https://'. $domain . '/na/' . $pixel .'" width="1" height="1" alt="" /></span>';
   }
   return $content;
 
