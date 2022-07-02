@@ -3,7 +3,7 @@
  * Plugin Name: VG TOM Service Plugin
  * Plugin URI: http://www.netzpolitik.org/wp-tomservice.tar.gz
  * Description: Verwaltung der VG Wort Zählpixel, Autoren Kartei Nummern, TOM Konto zugriff und Text Meldung
- * Version: 1.00
+ * Version: 5.6
  * Author: Mark Washeim mwa@newthinking.de
  * Author URI: http://netzpolitik.org
  * License: GPL v2.0 http://www.gnu.org/licenses/gpl-2.0
