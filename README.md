@@ -5,12 +5,12 @@ Tom Service, a wordpress plugin, provides Soap calls to the German VG Wort royal
 
 === WP-TOMSERVICE ===
 
-* Contributors: mwa@netzpolitik.org
-* Url: http://netzpolitik.org/
+* Contributors: blueprint@poetaster.de
+* Url: http://github.com/poetaster/tomservice
 * Tags: VG-Wort, T.O.M., Zählpixel
 * Requires at least: 3.0
-* Tested up to: 5.6
-* Stable tag: 5.6
+* Tested up to: 6.0.1
+* Stable tag: 5.70
 * License: GPLv2 or later
 * License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -73,7 +73,16 @@ IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING WILL ANY C
 
 == Changelog ==
 
-= 5.6 = functional multi-author support
+= 5.7 = 
+
+* move to version 2.0 of message service
+ add required fields for publisheer to collect on 'meldung'
+
+= 5.6 = 
+
+* functional multi-author support, 
+* admin menu elements broken out to a separate source file. 
+* added the ability to list texts that succeeded in winding up in the tom db.
 
 = 5.3 = working toward multiple author support
 
