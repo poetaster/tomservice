@@ -59,7 +59,7 @@ Folgende Funktionen bietet das Plugin
 
 == Frequently Asked Questions ==
 
-Diskussion mwa@netzpolitik.org
+Diskussion https://github.com/poetaster/tomservice/issues
 
 == Screenshots ==
 
