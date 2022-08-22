@@ -301,11 +301,6 @@ function wpTomServiceCron($post_id, $code, $author = '')
       $httpString = explode(" ", $http_response_header[0]);
       throw new SoapFault('httpError', $httpString[1]);
     }
-<<<<<<< HEAD
-    $client = new SoapClient(MESSAGE_SERVICE_WSDL, array('login' => $vgWortUserId, 'password' => $vgWortUserPassword, 'exceptions' => true, 'trace' => 1, 'features' => SOAP_SINGLE_ELEMENT_ARRAYS));
-
-    $result = $client->newMessage(array("parties" => $parties, "privateidentificationid" => $fpriv, "messagetext" => $message, "webranges" => $webranges));
-=======
     $client = new SoapClient(MESSAGE_SERVICE_WSDL, array(
       'login' => $vgWortUserId, 
       'password' => $vgWortUserPassword, 
@@ -325,7 +320,6 @@ function wpTomServiceCron($post_id, $code, $author = '')
       'messagetext'=>$message, 
       'webranges'=>$webranges));
 
->>>>>>> 9e6befd (Add the fields required for messages in version 2.0. These permit the)
     // we flag it's been submitted to avoid processing again. 
     // used as flag in the settings page post action. 
     update_post_meta($post->ID, 'tom_submitted',  'submitted');
@@ -338,13 +332,6 @@ function wpTomServiceCron($post_id, $code, $author = '')
     //wp_clear_scheduled_hook( 'service_submit_event', array( $post->ID, $fpriv ) );
   } catch (SoapFault $soapFault) {
     $detail = $soapFault->faultcode;
-<<<<<<< HEAD
-    error_log($soapFault, 0);
-    update_post_meta($post->ID, 'tom_fault',  $soapFault->detail);
-    update_post_meta($post->ID, 'tom_submitted',  'pending');
-    // echo $post->ID ."\n\n";
-    // var_dump($soapFault->detail);
-=======
     error_log($soapFault,0);
     update_post_meta($post->ID , 'tom_fault',  $soapFault->detail);
     update_post_meta($post->ID , 'tom_submitted',  'pending');
@@ -352,7 +339,6 @@ function wpTomServiceCron($post_id, $code, $author = '')
       echo $post->ID ."\n\n";
       var_dump($soapFault->detail);
     }
->>>>>>> 9e6befd (Add the fields required for messages in version 2.0. These permit the)
     return $soapFault->detail;
 
     // yup, trouble in paradise
