@@ -34,6 +34,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
 include('admin-menu.php');
+
+define('DEBUG_TOM', 0);
 define('PLUGINNAME', 'wp-tomservice');
 define('TOMMETA', get_option('wp_tommeta', 'wp_vgwortmarke'));
 define('TOMMETA_PRIV', get_option('wp_tommeta_priv', 'wp_vgwortmarke_priv'));
@@ -128,9 +130,9 @@ function wpTomServiceCLI()
     $elapsed = (time() - $postdate)  / 86400;
 
     // only submit if older than 5 days
-    //echo $result->post_date_gmt . "\n\n";
-    //echo $result->ID . "\n\n";
-    //
+    // echo $result->post_date_gmt . "\n\n";
+    // echo $result->ID . "\n\n";
+    
     if ($elapsed > 5) {
       $soapResult = wpTomServiceCron($result->ID, $code[0], $cardNumber[0]);
       //echo $soapResult;
@@ -274,15 +276,22 @@ function wpTomServiceCron($post_id, $code, $author = '')
     $authors['author'][] = array('cardNumber' => $cardNumber, 'firstName' => substr($givenName, 0, 39), 'surName' => $surName);
   }
 
-  $parties = array('authors' => $authors);
-  if ($debug_flag) var_dump($parties);
+  if (DEBUG_TOM) var_dump($fpriv);
 
+  $parties = array('authors' => $authors);
+
+  if (DEBUG_TOM) var_dump($parties);
+
+  if (DEBUG_TOM) var_dump($parties);
+  
   // shortext is title truncated
   $shortText = mb_substr($post->post_title, 0, 99);
 
   // webrange is the url(s).
   $webrange = array('url' => array(get_permalink($post->ID)));
   $webranges['webrange'][] = $webrange;
+  
+  if (DEBUG_TOM) var_dump($webranges);
 
   // is it a poem (NOT)
   $isLyric = false;
@@ -295,12 +304,16 @@ function wpTomServiceCron($post_id, $code, $author = '')
 
   // create a VG Wort message
   $message = array('shorttext' => $shortText, 'text' => $text, 'lyric' => $isLyric);
+
+  if (DEBUG_TOM) var_dump($message);
+
   try {
     // catch and throw an exception if the authentication or the authorization error occurs
     if (!@fopen(str_replace('://', '://' . WORT_USER . ':' . WORT_PASS . '@', MESSAGE_SERVICE_WSDL), 'r')) {
       $httpString = explode(" ", $http_response_header[0]);
       throw new SoapFault('httpError', $httpString[1]);
     }
+
     $client = new SoapClient(MESSAGE_SERVICE_WSDL, array(
       'login' => $vgWortUserId, 
       'password' => $vgWortUserPassword, 
@@ -308,13 +321,15 @@ function wpTomServiceCron($post_id, $code, $author = '')
       'trace'=>1, 
       'features' => SOAP_SINGLE_ELEMENT_ARRAYS ));
 
+    if (DEBUG_TOM) var_dump($client);
+
     $result = $client->newMessage(array(
       'distributionRight' => 'true',
       'otherRightsOfPublicReproduction' => 'true',
       'publicAccessRight' => 'true',
       'reproductionRight' => 'true',
       'rightsGrantedConfirmation' =>'true',
-      'withoutOwnParticipation' => 'false',
+      'WithoutOwnParticipation' => 'false',
       'parties'=>$parties, 
       'privateidentificationid'=>$fpriv, 
       'messagetext'=>$message, 
@@ -324,7 +339,7 @@ function wpTomServiceCron($post_id, $code, $author = '')
     // used as flag in the settings page post action. 
     update_post_meta($post->ID, 'tom_submitted',  'submitted');
     // the following permits seeing the actual xml data submitted
-    if ($debug_flag) {
+    if (DEBUG_TOM) {
       error_log($client->__getLastRequest(),0);
       var_dump($result);
     }
@@ -335,7 +350,7 @@ function wpTomServiceCron($post_id, $code, $author = '')
     error_log($soapFault,0);
     update_post_meta($post->ID , 'tom_fault',  $soapFault->detail);
     update_post_meta($post->ID , 'tom_submitted',  'pending');
-    if ($debug_flag) {
+    if (DEBUG_TOM) {
       echo $post->ID ."\n\n";
       var_dump($soapFault->detail);
     }
