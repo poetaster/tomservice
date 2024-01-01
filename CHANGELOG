@@ -1,7 +1,7 @@
 # Changelog
 
-## [Start] - 2024-01-01
-* renamed Plugin in title of README and description. Removed NO WARRANTY pragraph from README
+## [1.0.0] - 2024-01-01
+* changed README
 * renamed README.md README
 * moved old changelog from README.md to CHANGELOG
 * added CHANGELOG
