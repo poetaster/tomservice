@@ -1,12 +1,11 @@
 # Changelog
 
 ## [1.0.0] - 2024-01-01
-* changed README
-* renamed README.md README
-* moved old changelog from README.md to CHANGELOG
-* added CHANGELOG
+* changed README.md
+* moved old changelog from README.md to CHANGELOG.md
+* added CHANGELOG.md
 * renamed project to vgw-pixel
-* renamed COPYING to LICENSE
+* renamed COPYING.md to LICENSE.md
 * Created fork of https://github.com/poetaster/tomservice
 
 ### Original changelog until Fork 
